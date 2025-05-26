@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday } from "date-fns";
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, addMonths, subMonths } from "date-fns";
 import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface LeaveRequest {
   id: string;
@@ -24,21 +26,34 @@ export default function LeaveCalendar({ userId }: LeaveCalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
     const fetchLeaveRequests = async () => {
       try {
+        setIsLoading(true);
+        setError(null);
+        console.log('Fetching leave requests...');
         const response = await fetch("/api/leave/calendar");
+        console.log('Response status:', response.status);
+        
         if (!response.ok) {
-          throw new Error("Failed to fetch leave calendar");
+          const errorData = await response.json().catch(() => null);
+          console.error('Error response:', errorData);
+          throw new Error(errorData?.message || "Failed to fetch leave calendar");
         }
+        
         const data = await response.json();
+        console.log('Received data:', data);
         setLeaveRequests(data);
       } catch (error) {
+        console.error('Error fetching leave requests:', error);
+        const errorMessage = error instanceof Error ? error.message : "Failed to fetch leave calendar";
+        setError(errorMessage);
         toast({
           title: "Error",
-          description: "Failed to fetch leave calendar. Please try again.",
+          description: errorMessage,
           variant: "destructive",
         });
       } finally {
@@ -61,6 +76,28 @@ export default function LeaveCalendar({ userId }: LeaveCalendarProps) {
     });
   };
 
+  const handlePreviousMonth = () => {
+    setCurrentDate(subMonths(currentDate, 1));
+  };
+
+  const handleNextMonth = () => {
+    setCurrentDate(addMonths(currentDate, 1));
+  };
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64 space-y-4">
+        <div className="text-red-600">{error}</div>
+        <Button 
+          onClick={() => window.location.reload()} 
+          variant="outline"
+        >
+          Retry
+        </Button>
+      </div>
+    );
+  }
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -76,26 +113,28 @@ export default function LeaveCalendar({ userId }: LeaveCalendarProps) {
           {format(currentDate, "MMMM yyyy")}
         </h2>
         <div className="flex space-x-2">
-          <button
-            onClick={() =>
-              setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() - 1)))
-            }
-            className="px-3 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+          <Button
+            onClick={handlePreviousMonth}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-1"
           >
+            <ChevronLeft className="h-4 w-4" />
             Previous
-          </button>
-          <button
-            onClick={() =>
-              setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() + 1)))
-            }
-            className="px-3 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+          </Button>
+          <Button
+            onClick={handleNextMonth}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-1"
           >
             Next
-          </button>
+            <ChevronRight className="h-4 w-4" />
+          </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-7 gap-px bg-gray-200">
+      <div className="grid grid-cols-7 gap-px bg-gray-200 rounded-lg overflow-hidden">
         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
           <div
             key={day}
@@ -110,7 +149,7 @@ export default function LeaveCalendar({ userId }: LeaveCalendarProps) {
           return (
             <div
               key={day.toString()}
-              className={`min-h-[100px] bg-white p-2 ${
+              className={`min-h-[100px] bg-white p-2 hover:bg-gray-50 transition-colors ${
                 !isSameMonth(day, currentDate) ? "bg-gray-50" : ""
               } ${isToday(day) ? "ring-2 ring-indigo-500" : ""}`}
             >
@@ -121,7 +160,7 @@ export default function LeaveCalendar({ userId }: LeaveCalendarProps) {
                 {leaveRequestsForDay.map((request) => (
                   <div
                     key={request.id}
-                    className="text-xs p-1 rounded bg-indigo-50 text-indigo-700 truncate"
+                    className="text-xs p-1 rounded bg-indigo-50 text-indigo-700 truncate hover:bg-indigo-100 transition-colors cursor-pointer"
                     title={`${request.user.firstName} ${request.user.lastName} - ${request.type}`}
                   >
                     {request.user.firstName} {request.user.lastName} - {request.type}

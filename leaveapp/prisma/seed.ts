@@ -1,4 +1,4 @@
-const { PrismaClient, UserRole } = require('@prisma/client');
+const { PrismaClient, Role } = require('@prisma/client');
 const { hash } = require('bcryptjs');
 
 const prisma = new PrismaClient();
@@ -8,31 +8,39 @@ async function main() {
   const users = [
     {
       email: 'employee@test.com',
-      name: 'Test Employee',
+      firstName: 'Test',
+      lastName: 'Employee',
       password: await hash('password123', 12),
-      role: UserRole.EMPLOYEE,
-      department: 'Engineering'
+      role: Role.EMPLOYEE,
+      department: 'Engineering',
+      leaveBalance: 20
     },
     {
       email: 'supervisor@test.com',
-      name: 'Test Supervisor',
+      firstName: 'Test',
+      lastName: 'Supervisor',
       password: await hash('password123', 12),
-      role: UserRole.SUPERVISOR,
-      department: 'Engineering'
-    },
-    {
-      email: 'director@test.com',
-      name: 'Test Director',
-      password: await hash('password123', 12),
-      role: UserRole.DIRECTOR,
-      department: 'Engineering'
+      role: Role.SUPERVISOR,
+      department: 'Engineering',
+      leaveBalance: 20
     },
     {
       email: 'hr@test.com',
-      name: 'Test HR',
+      firstName: 'Test',
+      lastName: 'HR',
       password: await hash('password123', 12),
-      role: UserRole.HR,
-      department: 'Human Resources'
+      role: Role.HR,
+      department: 'Human Resources',
+      leaveBalance: 20
+    },
+    {
+      email: 'admin@test.com',
+      firstName: 'Test',
+      lastName: 'Admin',
+      password: await hash('password123', 12),
+      role: Role.ADMIN,
+      department: 'Administration',
+      leaveBalance: 20
     }
   ];
 
