@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "vercel-build": "cd leaveapp && npm install && npm run build",
-    "build": "cd leaveapp && npm run build",
+    "build": "cd leaveapp && npm install && npm run build",
     "dev": "cd leaveapp && npm run dev",
     "start": "cd leaveapp && npm run start",
     "postinstall": "cd leaveapp && npm install"
@@ -12,18 +11,6 @@
   "dependencies": {
     "next": "14.1.0",
     "react": "^18",
-    "react-dom": "^18",
-    "@prisma/client": "^5.10.2",
-    "bcryptjs": "^2.4.3",
-    "date-fns": "^3.3.1",
-    "next-auth": "^4.24.6"
-  },
-  "devDependencies": {
-    "prisma": "^5.10.2",
-    "typescript": "^5",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "@types/node": "^20",
-    "@types/bcryptjs": "^2.4.6"
+    "react-dom": "^18"
   }
 }
