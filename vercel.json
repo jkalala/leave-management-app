@@ -1,6 +1,12 @@
 {
-  "buildCommand": "cd leaveapp && npm run build",
+  "buildCommand": "cd leaveapp && npm install && npm run build",
   "outputDirectory": "leaveapp/.next",
   "installCommand": "cd leaveapp && npm install",
-  "framework": "nextjs"
+  "framework": "nextjs",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/leaveapp/$1"
+    }
+  ]
 } 

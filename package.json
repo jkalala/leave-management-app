@@ -6,7 +6,8 @@
     "vercel-build": "cd leaveapp && npm install && npm run build",
     "build": "cd leaveapp && npm run build",
     "dev": "cd leaveapp && npm run dev",
-    "start": "cd leaveapp && npm run start"
+    "start": "cd leaveapp && npm run start",
+    "postinstall": "cd leaveapp && npm install"
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.31.6",

@@ -6,6 +6,11 @@ const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ['@prisma/client', 'bcryptjs'],
   },
+  output: 'standalone',
+  distDir: '.next',
+  poweredByHeader: false,
+  reactStrictMode: true,
+  swcMinify: true
 };
 
 module.exports = nextConfig;
