@@ -1,12 +1,7 @@
 {
-  "buildCommand": "cd leaveapp && npm install && npm run build",
+  "buildCommand": "npm run vercel-build",
   "outputDirectory": "leaveapp/.next",
-  "installCommand": "cd leaveapp && npm install",
+  "installCommand": "npm install",
   "framework": "nextjs",
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/leaveapp/$1"
-    }
-  ]
+  "rootDirectory": "leaveapp"
 } 
