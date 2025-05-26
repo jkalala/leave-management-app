@@ -1,4 +1,13 @@
 {
+  "name": "leaveapp-root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "vercel-build": "cd leaveapp && npm install && npm run build",
+    "build": "cd leaveapp && npm run build",
+    "dev": "cd leaveapp && npm run dev",
+    "start": "cd leaveapp && npm run start"
+  },
   "dependencies": {
     "@clerk/clerk-react": "^5.31.6",
     "@clerk/nextjs": "^4.29.7",
