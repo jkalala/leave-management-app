@@ -107,7 +107,7 @@ export default function NewLeaveRequestForm({ userId }: NewLeaveRequestFormProps
           </label>
           <DatePicker
             selected={startDate}
-            onChange={(date) => setValue("startDate", date as Date)}
+            onChange={(date: Date | null) => setValue("startDate", date as Date)}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             dateFormat="MMMM d, yyyy"
             minDate={new Date()}
@@ -128,7 +128,7 @@ export default function NewLeaveRequestForm({ userId }: NewLeaveRequestFormProps
           </label>
           <DatePicker
             selected={endDate}
-            onChange={(date) => setValue("endDate", date as Date)}
+            onChange={(date: Date | null) => setValue("endDate", date as Date)}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             dateFormat="MMMM d, yyyy"
             minDate={startDate || new Date()}
