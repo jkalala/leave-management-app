@@ -11,7 +11,7 @@ const nextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
   swcMinify: true,
-  transpilePackages: ['@mui/material', '@mui/system', '@mui/x-date-pickers'],
+  transpilePackages: ['@mui/material', '@mui/system', '@mui/x-date-pickers', '@emotion/react', '@emotion/styled', '@emotion/cache'],
   webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,

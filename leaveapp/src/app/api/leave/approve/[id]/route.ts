@@ -1,45 +1,30 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import { PrismaClient, Prisma } from '@prisma/client';
+import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-
-const prisma = new PrismaClient();
-
-// Define role constants
-const SUPERVISOR = 'SUPERVISOR' as const;
-const ADMIN = 'ADMIN' as const;
+import prisma from '@/lib/prisma';
 
 export async function POST(
-  req: Request,
+  request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
-
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { action } = await req.json();
-    const requestId = params.id;
-
-    if (!['APPROVE', 'REJECT'].includes(action)) {
+    const { status } = await request.json();
+    if (!status || !['APPROVED', 'REJECTED'].includes(status)) {
       return NextResponse.json(
-        { error: 'Invalid action' },
+        { error: 'Invalid status' },
         { status: 400 }
       );
     }
 
     // Get the leave request
     const leaveRequest = await prisma.leaveRequest.findUnique({
-      where: { id: requestId },
-      include: {
-        user: {
-          select: {
-            department: true,
-          },
-        },
-      },
+      where: { id: params.id },
+      include: { user: true },
     });
 
     if (!leaveRequest) {
@@ -49,10 +34,9 @@ export async function POST(
       );
     }
 
-    // Get the approver's role
+    // Get the approver's user record
     const approver = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: { role: true, department: true },
+      where: { email: session.user.email! },
     });
 
     if (!approver) {
@@ -62,53 +46,25 @@ export async function POST(
       );
     }
 
-    // Check if the approver has permission
-    if ((approver.role as string) === 'SUPERVISOR') {
-      if (approver.department !== leaveRequest.user.department) {
-        return NextResponse.json(
-          { error: 'Not authorized to approve this request' },
-          { status: 403 }
-        );
-      }
-
-      // Update the request status based on supervisor's action
-      await prisma.leaveRequest.update({
-        where: { id: requestId },
-        data: {
-          status: action === 'APPROVE' ? 'APPROVED' : 'REJECTED',
-          supervisorId: session.user.id,
-        } as Prisma.LeaveRequestUncheckedUpdateInput,
-      });
-    } else if ((approver.role as string) === 'ADMIN') {
-      if (leaveRequest.status !== 'APPROVED') {
-        return NextResponse.json(
-          { error: 'Request must be approved by supervisor first' },
-          { status: 400 }
-        );
-      }
-
-      // Update the request status based on director's action
-      await prisma.leaveRequest.update({
-        where: { id: requestId },
-        data: {
-          status: action === 'APPROVE' ? 'APPROVED' : 'REJECTED',
-          directorId: session.user.id,
-        } as Prisma.LeaveRequestUncheckedUpdateInput,
-      });
-    } else {
+    // Check if the approver is in the same department
+    if (approver.department !== leaveRequest.user.department) {
       return NextResponse.json(
-        { error: 'Unauthorized role' },
+        { error: 'You can only approve requests from your department' },
         { status: 403 }
       );
     }
 
-    // TODO: Send notifications to the employee about the status change
+    // Update the leave request status
+    const updatedRequest = await prisma.leaveRequest.update({
+      where: { id: params.id },
+      data: { status },
+    });
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json(updatedRequest);
   } catch (error) {
-    console.error('Error processing approval:', error);
+    console.error('Error approving leave request:', error);
     return NextResponse.json(
-      { error: 'Error processing approval' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
