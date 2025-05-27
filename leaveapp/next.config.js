@@ -16,11 +16,16 @@ const nextConfig = {
     config.resolve.alias = {
       ...config.resolve.alias,
       '@emotion/styled': '@emotion/styled/base',
+      '@emotion/react/jsx-runtime': '@emotion/react/jsx-runtime',
     };
     return config;
   },
   compiler: {
-    emotion: true,
+    emotion: {
+      sourceMap: true,
+      autoLabel: 'dev-only',
+      labelFormat: '[local]',
+    },
   },
 };
 
