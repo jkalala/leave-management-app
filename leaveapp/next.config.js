@@ -24,26 +24,10 @@ const nextConfig = {
       ...config.resolve.fallback,
       fs: false,
     };
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      '@emotion/styled': '@emotion/styled/base',
-      '@emotion/react/jsx-runtime': require.resolve('@emotion/react/jsx-runtime'),
-    };
     return config;
   },
   compiler: {
-    emotion: {
-      sourceMap: true,
-      autoLabel: 'dev-only',
-      labelFormat: '[local]',
-      importMap: {
-        '@mui/material': {
-          styled: {
-            canonicalImport: ['@emotion/styled', 'default'],
-          },
-        },
-      },
-    }
+    emotion: true
   }
 };
 
