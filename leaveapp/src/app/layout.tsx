@@ -1,7 +1,9 @@
 import { type Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import Providers from '@/components/Providers'
+import { ThemeProvider } from '@/components/providers/ThemeProvider'
+import { Toaster } from '@/components/ui/toaster'
+import { AuthProvider } from '@/components/providers/AuthProvider'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 
@@ -25,7 +27,12 @@ export default async function RootLayout({
   return (
     <html lang="en" className={inter.className}>
       <body className="antialiased">
-        <Providers session={session}>{children}</Providers>
+        <ThemeProvider>
+          <AuthProvider session={session}>
+            {children}
+            <Toaster />
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   )
