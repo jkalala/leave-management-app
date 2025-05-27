@@ -19,9 +19,21 @@ const nextConfig = {
     '@emotion/styled',
     '@emotion/cache'
   ],
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@emotion/styled': '@emotion/styled/base',
+      '@emotion/react/jsx-runtime': require.resolve('@emotion/react/jsx-runtime'),
+    };
+    return config;
+  },
   compiler: {
-    emotion: true
+    emotion: {
+      sourceMap: true,
+      autoLabel: 'dev-only',
+      labelFormat: '[local]',
+    },
   },
 };
 
-module.exports = nextConfig;
+export default nextConfig;
