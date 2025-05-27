@@ -19,6 +19,9 @@ const nextConfig = {
     };
     return config;
   },
+  compiler: {
+    emotion: true,
+  },
 };
 
 module.exports = nextConfig;
