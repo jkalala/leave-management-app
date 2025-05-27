@@ -1,11 +1,12 @@
-import { auth } from "@clerk/nextjs/server";
+import { getServerSession } from "next-auth/next";
 import { redirect } from "next/navigation";
 import NewLeaveRequestForm from "@/components/leave/NewLeaveRequestForm";
+import { authOptions } from "@/lib/auth";
 
 export default async function NewLeaveRequestPage() {
-  const session = await auth();
+  const session = await getServerSession(authOptions);
 
-  if (!session?.userId) {
+  if (!session?.user?.id) {
     redirect("/sign-in");
   }
 
@@ -21,7 +22,7 @@ export default async function NewLeaveRequestPage() {
               <p>Fill in the details below to submit your leave request.</p>
             </div>
             <div className="mt-5">
-              <NewLeaveRequestForm userId={session.userId} />
+              <NewLeaveRequestForm userId={session.user.id} />
             </div>
           </div>
         </div>

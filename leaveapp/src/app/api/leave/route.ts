@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { getServerSession } from "next-auth/next";
 import { PrismaClient, Prisma } from "@prisma/client";
 import { z } from "zod";
+import { authOptions } from "@/lib/auth";
 
 const prisma = new PrismaClient();
 
@@ -20,9 +21,9 @@ const leaveRequestSchema = z.object({
 
 export async function POST(req: Request) {
   try {
-    const session = await auth();
+    const session = await getServerSession(authOptions);
 
-    if (!session?.userId) {
+    if (!session?.user?.id) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
@@ -30,7 +31,7 @@ export async function POST(req: Request) {
     const validatedData = leaveRequestSchema.parse(body);
 
     const dbUser = await prisma.user.findUnique({
-      where: { id: session.userId },
+      where: { id: session.user.id },
       select: {
         id: true,
         department: true,
@@ -116,14 +117,14 @@ export async function POST(req: Request) {
 
 export async function GET(req: Request) {
   try {
-    const session = await auth();
+    const session = await getServerSession(authOptions);
 
-    if (!session?.userId) {
+    if (!session?.user?.id) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
     const user = await prisma.user.findUnique({
-      where: { id: session.userId },
+      where: { id: session.user.id },
       select: {
         id: true,
         email: true
