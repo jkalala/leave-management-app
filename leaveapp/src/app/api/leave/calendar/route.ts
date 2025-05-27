@@ -5,6 +5,8 @@ import { authOptions } from "@/lib/auth";
 
 const prisma = new PrismaClient();
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: Request) {
   try {
     console.log('Calendar API: Starting request');

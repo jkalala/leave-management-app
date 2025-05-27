@@ -4,24 +4,26 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useToast } from "@/components/ui/use-toast";
+import { useSession } from "next-auth/react";
 
 const leaveRequestSchema = z.object({
-  type: z.enum(["ANNUAL", "SICK", "PARENTAL", "COMPASSIONATE", "UNPAID"]),
+  type: z.enum(["ANNUAL", "SICK", "PARENTAL", "COMPASSIONATE", "OTHER"]),
   startDate: z.date(),
   endDate: z.date(),
-  reason: z.string().optional(),
-  attachments: z.array(z.string()).optional(),
+  reason: z.string().min(1, "Reason is required"),
+  isUrgent: z.boolean().default(false),
+  attachments: z.array(z.any()).optional(),
 });
 
 type LeaveRequestFormData = z.infer<typeof leaveRequestSchema>;
 
 interface NewLeaveRequestFormProps {
-  userId: string;
+  userId?: string;
 }
 
 export default function NewLeaveRequestForm({ userId }: NewLeaveRequestFormProps) {
+  const { data: session } = useSession();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
@@ -48,7 +50,7 @@ export default function NewLeaveRequestForm({ userId }: NewLeaveRequestFormProps
         },
         body: JSON.stringify({
           ...data,
-          userId,
+          userId: session?.user?.id || userId,
         }),
       });
 
@@ -74,22 +76,16 @@ export default function NewLeaveRequestForm({ userId }: NewLeaveRequestFormProps
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div>
-        <label
-          htmlFor="type"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Leave Type
-        </label>
+        <label className="block text-sm font-medium text-gray-700">Leave Type</label>
         <select
-          id="type"
           {...register("type")}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
         >
           <option value="ANNUAL">Annual Leave</option>
           <option value="SICK">Sick Leave</option>
           <option value="PARENTAL">Parental Leave</option>
           <option value="COMPASSIONATE">Compassionate Leave</option>
-          <option value="UNPAID">Unpaid Leave</option>
+          <option value="OTHER">Other</option>
         </select>
         {errors.type && (
           <p className="mt-1 text-sm text-red-600">{errors.type.message}</p>
@@ -98,49 +94,23 @@ export default function NewLeaveRequestForm({ userId }: NewLeaveRequestFormProps
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
         <div>
-          <label
-            htmlFor="startDate"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Start Date
-          </label>
-          <DatePicker
-            value={startDate}
-            onChange={(date) => setValue("startDate", date as Date)}
-            minDate={new Date()}
-            slotProps={{
-              textField: {
-                fullWidth: true,
-                size: "small",
-                className: "mt-1",
-              },
-            }}
+          <label className="block text-sm font-medium text-gray-700">Start Date</label>
+          <input
+            type="date"
+            {...register("startDate", { valueAsDate: true })}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           />
           {errors.startDate && (
-            <p className="mt-1 text-sm text-red-600">
-              {errors.startDate.message}
-            </p>
+            <p className="mt-1 text-sm text-red-600">{errors.startDate.message}</p>
           )}
         </div>
 
         <div>
-          <label
-            htmlFor="endDate"
-            className="block text-sm font-medium text-gray-700"
-          >
-            End Date
-          </label>
-          <DatePicker
-            value={endDate}
-            onChange={(date) => setValue("endDate", date as Date)}
-            minDate={startDate || new Date()}
-            slotProps={{
-              textField: {
-                fullWidth: true,
-                size: "small",
-                className: "mt-1",
-              },
-            }}
+          <label className="block text-sm font-medium text-gray-700">End Date</label>
+          <input
+            type="date"
+            {...register("endDate", { valueAsDate: true })}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           />
           {errors.endDate && (
             <p className="mt-1 text-sm text-red-600">{errors.endDate.message}</p>
@@ -149,60 +119,56 @@ export default function NewLeaveRequestForm({ userId }: NewLeaveRequestFormProps
       </div>
 
       <div>
-        <label
-          htmlFor="reason"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Reason (Optional)
-        </label>
+        <label className="block text-sm font-medium text-gray-700">Reason</label>
         <textarea
-          id="reason"
           {...register("reason")}
           rows={3}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
         />
         {errors.reason && (
           <p className="mt-1 text-sm text-red-600">{errors.reason.message}</p>
         )}
       </div>
 
+      <div className="flex items-center">
+        <input
+          type="checkbox"
+          {...register("isUrgent")}
+          className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+        />
+        <label className="ml-2 block text-sm text-gray-700">Urgent Request</label>
+      </div>
+
       <div>
-        <label
-          htmlFor="attachments"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Attachments (Optional)
-        </label>
+        <label className="block text-sm font-medium text-gray-700">Attachments</label>
         <input
           type="file"
-          id="attachments"
           multiple
+          onChange={(e) => {
+            const files = Array.from(e.target.files || []);
+            setValue("attachments", files);
+          }}
           className="mt-1 block w-full text-sm text-gray-500
             file:mr-4 file:py-2 file:px-4
             file:rounded-md file:border-0
             file:text-sm file:font-semibold
-            file:bg-indigo-50 file:text-indigo-700
-            hover:file:bg-indigo-100"
-          onChange={(e) => {
-            const files = Array.from(e.target.files || []);
-            setValue(
-              "attachments",
-              files.map((file) => file.name)
-            );
-          }}
+            file:bg-blue-50 file:text-blue-700
+            hover:file:bg-blue-100"
         />
-        {errors.attachments && (
-          <p className="mt-1 text-sm text-red-600">
-            {errors.attachments.message}
-          </p>
-        )}
       </div>
 
-      <div className="flex justify-end">
+      <div className="flex justify-end space-x-3">
+        <button
+          type="button"
+          onClick={() => window.history.back()}
+          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+        >
+          Cancel
+        </button>
         <button
           type="submit"
           disabled={isSubmitting}
-          className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
+          className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50"
         >
           {isSubmitting ? "Submitting..." : "Submit Request"}
         </button>

@@ -5,6 +5,7 @@ import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isTod
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 interface LeaveRequest {
   id: string;
@@ -19,10 +20,11 @@ interface LeaveRequest {
 }
 
 interface LeaveCalendarProps {
-  userId: string;
+  userId?: string;
 }
 
 export default function LeaveCalendar({ userId }: LeaveCalendarProps) {
+  const { data: session } = useSession();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -34,18 +36,14 @@ export default function LeaveCalendar({ userId }: LeaveCalendarProps) {
       try {
         setIsLoading(true);
         setError(null);
-        console.log('Fetching leave requests...');
         const response = await fetch("/api/leave/calendar");
-        console.log('Response status:', response.status);
         
         if (!response.ok) {
           const errorData = await response.json().catch(() => null);
-          console.error('Error response:', errorData);
           throw new Error(errorData?.message || "Failed to fetch leave calendar");
         }
         
         const data = await response.json();
-        console.log('Received data:', data);
         setLeaveRequests(data);
       } catch (error) {
         console.error('Error fetching leave requests:', error);
@@ -135,38 +133,47 @@ export default function LeaveCalendar({ userId }: LeaveCalendarProps) {
       </div>
 
       <div className="grid grid-cols-7 gap-px bg-gray-200 rounded-lg overflow-hidden">
-        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
           <div
             key={day}
-            className="bg-gray-50 py-2 text-center text-sm font-semibold text-gray-700"
+            className="bg-gray-50 py-2 text-center text-sm font-semibold text-gray-900"
           >
             {day}
           </div>
         ))}
 
         {days.map((day) => {
-          const leaveRequestsForDay = getLeaveRequestsForDay(day);
+          const leaveRequests = getLeaveRequestsForDay(day);
+          const isCurrentMonth = isSameMonth(day, currentDate);
+          const isCurrentDay = isToday(day);
+
           return (
             <div
               key={day.toString()}
-              className={`min-h-[100px] bg-white p-2 hover:bg-gray-50 transition-colors ${
-                !isSameMonth(day, currentDate) ? "bg-gray-50" : ""
-              } ${isToday(day) ? "ring-2 ring-indigo-500" : ""}`}
+              className={`bg-white p-2 min-h-[100px] ${
+                !isCurrentMonth ? 'text-gray-400' : ''
+              }`}
             >
-              <div className="text-sm text-gray-500 mb-1">
-                {format(day, "d")}
+              <div
+                className={`text-sm font-medium ${
+                  isCurrentDay ? 'bg-blue-100 text-blue-600 rounded-full w-6 h-6 flex items-center justify-center' : ''
+                }`}
+              >
+                {format(day, 'd')}
               </div>
-              <div className="space-y-1">
-                {leaveRequestsForDay.map((request) => (
-                  <div
-                    key={request.id}
-                    className="text-xs p-1 rounded bg-indigo-50 text-indigo-700 truncate hover:bg-indigo-100 transition-colors cursor-pointer"
-                    title={`${request.user.firstName} ${request.user.lastName} - ${request.type}`}
-                  >
-                    {request.user.firstName} {request.user.lastName} - {request.type}
-                  </div>
-                ))}
-              </div>
+              {leaveRequests.length > 0 && (
+                <div className="mt-1 space-y-1">
+                  {leaveRequests.map((request) => (
+                    <div
+                      key={request.id}
+                      className="text-xs p-1 rounded bg-blue-50 text-blue-700 truncate"
+                      title={`${request.user.firstName} ${request.user.lastName} - ${request.type}`}
+                    >
+                      {request.user.firstName} {request.user.lastName} - {request.type}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           );
         })}

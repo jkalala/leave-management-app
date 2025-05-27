@@ -1,23 +1,21 @@
-'use client'
-
-import { SessionProvider } from "next-auth/react"
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import type { ReactNode } from 'react'
-import Header from './Header'
-
-const queryClient = new QueryClient()
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
+import { SessionProvider } from "next-auth/react";
+import type { ReactNode } from 'react';
+import ClientLayoutContent from './ClientLayoutContent';
 
 interface ClientLayoutProps {
-  children: ReactNode
+  children: ReactNode;
 }
 
-export default function ClientLayout({ children }: ClientLayoutProps) {
+export default async function ClientLayout({ children }: ClientLayoutProps) {
+  const session = await getServerSession(authOptions);
+
   return (
-    <SessionProvider>
-      <QueryClientProvider client={queryClient}>
-        <Header />
+    <SessionProvider session={session}>
+      <ClientLayoutContent session={session}>
         {children}
-      </QueryClientProvider>
+      </ClientLayoutContent>
     </SessionProvider>
-  )
+  );
 } 

@@ -27,6 +27,7 @@ const nextConfig = {
     config.resolve.alias = {
       ...config.resolve.alias,
       '@emotion/styled': '@emotion/styled/base',
+      '@emotion/react/jsx-runtime': require.resolve('@emotion/react/jsx-runtime'),
     };
     return config;
   },
@@ -35,8 +36,15 @@ const nextConfig = {
       sourceMap: true,
       autoLabel: 'dev-only',
       labelFormat: '[local]',
-    },
-  },
+      importMap: {
+        '@mui/material': {
+          styled: {
+            canonicalImport: ['@emotion/styled', 'default'],
+          },
+        },
+      },
+    }
+  }
 };
 
 module.exports = nextConfig;

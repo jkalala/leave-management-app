@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { useToast } from "@/components/ui/use-toast";
+import { useSession } from "next-auth/react";
 
 interface LeaveRequest {
   id: string;
@@ -25,10 +26,11 @@ interface LeaveRequest {
 }
 
 interface LeaveHistoryProps {
-  userId: string;
+  userId?: string;
 }
 
 export default function LeaveHistory({ userId }: LeaveHistoryProps) {
+  const { data: session } = useSession();
   const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
@@ -126,9 +128,7 @@ export default function LeaveHistory({ userId }: LeaveHistoryProps) {
                       ? "bg-green-100 text-green-800"
                       : request.status === "REJECTED"
                       ? "bg-red-100 text-red-800"
-                      : request.status === "PENDING"
-                      ? "bg-yellow-100 text-yellow-800"
-                      : "bg-gray-100 text-gray-800"
+                      : "bg-yellow-100 text-yellow-800"
                   }`}
                 >
                   {request.status}
@@ -138,23 +138,11 @@ export default function LeaveHistory({ userId }: LeaveHistoryProps) {
                 {request.approvals.map((approval) => (
                   <div key={approval.id} className="mb-1">
                     <span className="font-medium">
-                      {approval.approver.firstName} {approval.approver.lastName}:
-                    </span>{" "}
-                    <span
-                      className={`${
-                        approval.status === "APPROVED"
-                          ? "text-green-600"
-                          : approval.status === "REJECTED"
-                          ? "text-red-600"
-                          : "text-yellow-600"
-                      }`}
-                    >
-                      {approval.status}
+                      {approval.approver.firstName} {approval.approver.lastName}
                     </span>
+                    : {approval.status}
                     {approval.comments && (
-                      <p className="text-xs text-gray-500 mt-1">
-                        {approval.comments}
-                      </p>
+                      <span className="text-gray-400"> - {approval.comments}</span>
                     )}
                   </div>
                 ))}

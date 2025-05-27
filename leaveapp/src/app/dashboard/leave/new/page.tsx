@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import LeaveRequestForm from '@/components/LeaveRequestForm';
+import LeaveRequestFormWrapper from '@/components/LeaveRequestFormWrapper';
 
 export default function NewLeaveRequestPage() {
   const router = useRouter();
@@ -55,7 +55,7 @@ export default function NewLeaveRequestPage() {
       )}
 
       <div className="rounded-lg bg-white p-6 shadow">
-        <LeaveRequestForm onSubmit={handleSubmit} onCancel={handleCancel} />
+        <LeaveRequestFormWrapper onSubmit={handleSubmit} onCancel={handleCancel} />
       </div>
     </div>
   );

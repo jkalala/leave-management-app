@@ -1,23 +1,14 @@
-'use client';
-
-import { useSession } from "next-auth/react";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { Calendar, Clock, Users, Building, BookOpen, ArrowRight, CheckCircle2, BarChart3, Shield, Zap, Star } from "lucide-react";
-import { NavigationButtons } from "@/components/NavigationButtons";
-import { HeroImage } from "@/components/HeroImage";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import HomeContent from "@/components/HomeContent";
 
-export default function Home() {
-  const { data: session } = useSession();
+export default async function Home() {
+  const session = await getServerSession(authOptions);
 
   if (session) {
     redirect("/dashboard");
   }
 
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <h1 className="text-4xl font-bold">Welcome to Leave Management System</h1>
-    </main>
-  );
+  return <HomeContent />;
 }
