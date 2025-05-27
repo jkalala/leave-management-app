@@ -1,25 +1,21 @@
 'use client';
 
-import { ThemeProvider as MUIThemeProvider, createTheme } from '@mui/material/styles';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { ThemeProvider as MUIThemeProvider } from '@mui/material';
+import { createTheme } from '@mui/material';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns/AdapterDateFns';
 import CssBaseline from '@mui/material/CssBaseline';
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#4F46E5', // Indigo-600
+      main: '#2563eb',
     },
     secondary: {
-      main: '#6B7280', // Gray-500
+      main: '#64748b',
     },
   },
   components: {
-    MuiTextField: {
-      defaultProps: {
-        size: 'small',
-      },
-    },
     MuiButton: {
       styleOverrides: {
         root: {
