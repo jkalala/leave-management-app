@@ -23,7 +23,7 @@ const nextConfig = {
     config.resolve.alias = {
       ...config.resolve.alias,
       '@emotion/styled': '@emotion/styled/base',
-      '@emotion/react/jsx-runtime': require.resolve('@emotion/react/jsx-runtime'),
+      '@emotion/react/jsx-runtime': '@emotion/react/jsx-runtime',
     };
     return config;
   },
