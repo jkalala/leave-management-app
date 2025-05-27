@@ -10,7 +10,15 @@ const nextConfig = {
   distDir: '.next',
   poweredByHeader: false,
   reactStrictMode: true,
-  swcMinify: true
+  swcMinify: true,
+  transpilePackages: ['@mui/material', '@mui/system', '@mui/x-date-pickers'],
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@emotion/styled': '@emotion/styled/base',
+    };
+    return config;
+  },
 };
 
 module.exports = nextConfig;
