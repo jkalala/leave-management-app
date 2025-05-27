@@ -11,24 +11,25 @@ const nextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
   swcMinify: true,
-  transpilePackages: ['@mui/material', '@mui/system', '@mui/x-date-pickers', '@emotion/react', '@emotion/styled', '@emotion/cache'],
+  transpilePackages: [
+    '@mui/material',
+    '@mui/system',
+    '@mui/x-date-pickers',
+    '@emotion/react',
+    '@emotion/styled',
+    '@emotion/cache'
+  ],
   webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,
-      '@emotion/styled': '@emotion/styled/base',
-      '@emotion/react/jsx-runtime': '@emotion/react/jsx-runtime',
+      // Remove these aliases as they're no longer needed with proper Emotion configuration
     };
     return config;
   },
   compiler: {
-    emotion: {
-      sourceMap: true,
-      autoLabel: 'dev-only',
-      labelFormat: '[local]',
-    },
+    // Simplified Emotion compiler configuration
+    emotion: true
   },
 };
 
 module.exports = nextConfig;
-
-
