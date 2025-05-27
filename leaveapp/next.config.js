@@ -19,15 +19,7 @@ const nextConfig = {
     '@emotion/styled',
     '@emotion/cache'
   ],
-  webpack: (config) => {
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      // Remove these aliases as they're no longer needed with proper Emotion configuration
-    };
-    return config;
-  },
   compiler: {
-    // Simplified Emotion compiler configuration
     emotion: true
   },
 };
