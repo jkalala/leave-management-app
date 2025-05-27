@@ -20,15 +20,22 @@ const nextConfig = {
     '@emotion/cache'
   ],
   webpack: (config) => {
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+    };
     config.resolve.alias = {
       ...config.resolve.alias,
       '@emotion/styled': '@emotion/styled/base',
-      '@emotion/react/jsx-runtime': './node_modules/@emotion/react/jsx-runtime',
     };
     return config;
   },
   compiler: {
-    emotion: true
+    emotion: {
+      sourceMap: true,
+      autoLabel: 'dev-only',
+      labelFormat: '[local]',
+    },
   },
 };
 
