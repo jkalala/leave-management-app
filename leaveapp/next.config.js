@@ -19,16 +19,25 @@ const nextConfig = {
     '@emotion/styled',
     '@emotion/cache'
   ],
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
     config.resolve.fallback = {
       ...config.resolve.fallback,
       fs: false,
     };
+
+    // Remove problematic Emotion aliases
+    delete config.resolve.alias['@emotion/styled'];
+    delete config.resolve.alias['@emotion/react/jsx-runtime'];
+
     return config;
   },
   compiler: {
-    emotion: true
-  }
+    emotion: {
+      sourceMap: true,
+      autoLabel: 'dev-only',
+      labelFormat: '[local]',
+    },
+  },
 };
 
 module.exports = nextConfig;
