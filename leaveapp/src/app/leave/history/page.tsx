@@ -1,11 +1,12 @@
-import { auth } from "@clerk/nextjs/server";
+import { getServerSession } from "next-auth/next";
 import { redirect } from "next/navigation";
+import { authOptions } from "@/lib/auth";
 import LeaveHistory from "@/components/leave/LeaveHistory";
 
 export default async function LeaveHistoryPage() {
-  const session = await auth();
+  const session = await getServerSession(authOptions);
 
-  if (!session?.userId) {
+  if (!session?.user?.id) {
     redirect("/sign-in");
   }
 
@@ -21,7 +22,7 @@ export default async function LeaveHistoryPage() {
               <p>View your past leave requests and their status.</p>
             </div>
             <div className="mt-5">
-              <LeaveHistory userId={session.userId} />
+              <LeaveHistory userId={session.user.id} />
             </div>
           </div>
         </div>

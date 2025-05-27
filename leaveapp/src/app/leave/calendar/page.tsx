@@ -1,11 +1,12 @@
-import { auth } from "@clerk/nextjs/server";
+import { getServerSession } from "next-auth/next";
 import { redirect } from "next/navigation";
+import { authOptions } from "@/lib/auth";
 import LeaveCalendar from "@/components/leave/LeaveCalendar";
 
 export default async function LeaveCalendarPage() {
-  const session = await auth();
+  const session = await getServerSession(authOptions);
 
-  if (!session?.userId) {
+  if (!session?.user?.id) {
     redirect("/sign-in");
   }
 
@@ -21,7 +22,7 @@ export default async function LeaveCalendarPage() {
               <p>View team leave calendar and plan accordingly.</p>
             </div>
             <div className="mt-5">
-              <LeaveCalendar userId={session.userId} />
+              <LeaveCalendar userId={session.user.id} />
             </div>
           </div>
         </div>
