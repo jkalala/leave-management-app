@@ -13,6 +13,7 @@
     "@auth/prisma-adapter": "^2.9.1",
     "@emotion/cache": "^11.11.0",
     "@emotion/react": "^11.11.3",
+    "@emotion/server": "^11.11.0",
     "@emotion/styled": "^11.11.0",
     "@headlessui/react": "^2.2.4",
     "@hookform/resolvers": "^3.3.4",
