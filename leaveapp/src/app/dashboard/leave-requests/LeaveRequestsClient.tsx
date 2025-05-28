@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 import { LeaveRequestModal } from "@/components/LeaveRequestModal";
 
-export default function LeaveRequestsPage() {
+export function LeaveRequestsClient() {
   const { data: session } = useSession();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
