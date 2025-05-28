@@ -6,7 +6,7 @@ import { Calendar, Upload, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns/index.js';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 type LeaveType = 'ANNUAL' | 'SICK' | 'PARENTAL' | 'COMPASSIONATE' | 'OTHER';
 
