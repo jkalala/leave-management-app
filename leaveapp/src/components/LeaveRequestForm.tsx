@@ -6,7 +6,7 @@ import { Calendar, Upload, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns/AdapterDateFns";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns/index";
 
 type LeaveType = 'ANNUAL' | 'SICK' | 'PARENTAL' | 'COMPASSIONATE' | 'OTHER';
 
@@ -81,7 +81,13 @@ export default function LeaveRequestForm({ onSubmit, onCancel, session }: LeaveR
             <DatePicker
               value={startDate}
               onChange={(newValue) => setStartDate(newValue)}
-              className="mt-1 block w-full"
+              slotProps={{
+                textField: {
+                  fullWidth: true,
+                  size: "small",
+                  className: "mt-1"
+                }
+              }}
             />
           </LocalizationProvider>
           {errors.startDate && (
@@ -95,7 +101,13 @@ export default function LeaveRequestForm({ onSubmit, onCancel, session }: LeaveR
             <DatePicker
               value={endDate}
               onChange={(newValue) => setEndDate(newValue)}
-              className="mt-1 block w-full"
+              slotProps={{
+                textField: {
+                  fullWidth: true,
+                  size: "small",
+                  className: "mt-1"
+                }
+              }}
             />
           </LocalizationProvider>
           {errors.endDate && (
